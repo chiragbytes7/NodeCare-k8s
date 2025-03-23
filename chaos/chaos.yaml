@@ -1,0 +1,81 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-memory-chaos
+  namespace: default
+spec:
+  mode: all
+  selector:
+    namespaces:
+      - default
+  stressors:
+    cpu:
+      workers: 4
+      load: 90
+    memory:
+      workers: 2
+      size: "314572800"
+  duration: "120s"
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: db-disk-io-chaos
+  namespace: default
+spec:
+  action: latency  # Introduce disk I/O delay
+  mode: all  # Apply only to the DB pod
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: db  # Only affect the DB pod
+  path: "/var/lib"  # Target database storage path
+  delay: "200ms"  # Increase delay for stronger impact
+  percent: 100  # Apply delay to ALL I/O requests
+  duration: "120s"
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-latency-chaos
+  namespace: default
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+      - default
+  loss:
+    loss: "30"
+  duration: "120s"
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-chaos
+  namespace: default
+spec:
+  action: pod-kill
+  mode: all
+  selector:
+    namespaces:
+      - default
+  duration: "120s"
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress
+  namespace: default
+spec:
+  mode: all
+  selector:
+    namespaces:
+      - default
+  stressors:
+    cpu:
+      workers: 2   # Number of CPU cores to fully utilize
+      load: 80     # Target 80% CPU usage
+  duration: "120s"
+

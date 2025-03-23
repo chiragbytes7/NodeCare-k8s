@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress
+  namespace: default
+spec:
+  mode: all
+  selector:
+    namespaces:
+      - default
+  stressors:
+    cpu:
+      workers: 2   # Number of CPU cores to fully utilize
+      load: 80     # Target 80% CPU usage
+  duration: "120s"
